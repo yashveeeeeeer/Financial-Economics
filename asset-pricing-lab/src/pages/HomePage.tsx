@@ -57,7 +57,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-extrabold text-text-primary tracking-tight leading-tight mb-4">
-              Interactive Asset
+              Asset
               <br />
               <span className="bg-gradient-to-r from-accent-blue via-accent-purple to-accent-cyan bg-clip-text text-transparent">
                 Pricing Lab
