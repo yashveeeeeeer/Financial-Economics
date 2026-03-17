@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "equity-page",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "asset-pricing-lab",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["interactive-asset-pricing-lab/node_modules/vite/bin/vite.js", "dev", "interactive-asset-pricing-lab"],
+      "port": 5173,
+      "autoPort": true
+    }
+  ]
+}

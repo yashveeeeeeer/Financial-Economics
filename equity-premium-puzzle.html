@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Equity Premium Puzzle</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, serif;
+      background: #fff;
+      color: #333;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: normal;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      font-weight: normal;
+      margin: 1.5rem 0 0.75rem;
+      padding-bottom: 0.25rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    p, li {
+      margin-bottom: 0.75rem;
+      color: #444;
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      background: #f9f9f9;
+      border: 1px solid #e5e5e5;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .comparison-item {
+      padding: 1rem;
+      border: 1px solid #e5e5e5;
+      text-align: center;
+    }
+
+    .comparison-item .label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 0.25rem;
+    }
+
+    .comparison-item .value {
+      font-size: 1.25rem;
+    }
+
+    .slider-section {
+      padding: 1rem 0;
+      margin: 1rem 0;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
+    }
+
+    .slider-row label { min-width: 70px; }
+
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+    }
+
+    .slider-value {
+      font-family: monospace;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .formula-box {
+      padding: 0.75rem 1rem;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      font-family: monospace;
+      font-size: 0.95rem;
+      margin: 0.75rem 0;
+    }
+
+    .formula-live {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #f9f9f9;
+      border: 1px solid #e5e5e5;
+      font-size: 0.9rem;
+    }
+
+    .formula-line {
+      margin-bottom: 0.25rem;
+    }
+
+    .formula-line:last-child {
+      margin-bottom: 0;
+    }
+
+    .formula-note {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: -0.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .eq-block {
+      margin: 1rem 0;
+    }
+
+    .eq-block .formula-box {
+      margin-bottom: 0.5rem;
+      font-family: Georgia, serif;
+    }
+
+    .eq-vars {
+      font-size: 0.9rem;
+      color: #555;
+      padding-left: 1rem;
+      border-left: 2px solid #ddd;
+      margin-top: 0.5rem;
+    }
+
+    .eq-vars p {
+      margin-bottom: 0.35rem;
+    }
+
+    .slider-result {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: #f5f5f5;
+      font-size: 0.9rem;
+      border-left: 3px solid #999;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      padding: 0.5rem 0.75rem;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .tab:hover { background: #eee; }
+    .tab.active { background: #333; color: #fff; border-color: #333; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .expandable {
+      border: 1px solid #e5e5e5;
+      margin-bottom: 0.5rem;
+    }
+
+    .expandable summary {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .expandable summary::-webkit-details-marker { display: none; }
+
+    .expandable summary::after {
+      content: '+';
+      float: right;
+      font-size: 1rem;
+      color: #666;
+    }
+
+    .expandable[open] summary::after { content: '−'; }
+
+    .expandable .content {
+      padding: 0.75rem 1rem;
+      background: #fafafa;
+      border-top: 1px solid #e5e5e5;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .timeline {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .timeline-item {
+      flex: 1;
+      min-width: 120px;
+      padding: 0.75rem;
+      border: 1px solid #e5e5e5;
+      font-size: 0.9rem;
+    }
+
+    .timeline-item .year {
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Info button */
+    .info-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #666;
+      background: #e5e5e5;
+      border: none;
+      border-radius: 50%;
+      cursor: help;
+      margin-left: 2px;
+      vertical-align: middle;
+      font-family: Georgia, serif;
+    }
+
+    .info-btn:hover {
+      background: #ccc;
+      color: #333;
+    }
+
+    .term-wrap {
+      display: inline;
+      position: relative;
+    }
+
+    .tooltip {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      margin-top: 4px;
+      padding: 0.5rem 0.75rem;
+      background: #333;
+      color: #fff;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      width: 220px;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .tooltip.show { display: block; }
+
+    .tooltip {
+      font-family: Georgia, serif;
+      font-weight: normal;
+    }
+
+    .viz-section {
+      margin: 2rem 0;
+      padding: 1.25rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+    }
+
+    .viz-section h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    .viz-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .viz-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .viz-label {
+      width: 140px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .viz-bar-wrap {
+      flex: 1;
+      height: 28px;
+      background: #eee;
+      position: relative;
+      border: 1px solid #ddd;
+    }
+
+    .viz-bar {
+      height: 100%;
+      background: #666;
+      transition: width 0.3s ease;
+    }
+
+    .viz-bar.observed {
+      background: #333;
+    }
+
+    .viz-bar.model {
+      background: #999;
+    }
+
+    .viz-value {
+      width: 50px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+
+    .viz-scale {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 0.5rem;
+      padding-left: 140px;
+    }
+
+    .viz-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .viz-legend span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .viz-legend .swatch {
+      width: 12px;
+      height: 12px;
+    }
+
+    .viz-legend .swatch.observed { background: #333; }
+    .viz-legend .swatch.model { background: #999; }
+
+    /* ── Interactive box (slider sections) ────────────── */
+    .interactive-box {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 1.25rem;
+      margin: 1rem 0;
+    }
+    .interactive-box h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    /* ── Result panel / result cards ──────────────────── */
+    .result-panel {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .result-card {
+      flex: 1;
+      min-width: 140px;
+      background: #f5f5f0;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .result-card .rc-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+    .result-card .rc-value {
+      font-family: monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .result-card .rc-sub {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* ── EP bar visualization ─────────────────────────── */
+    .ep-bar-container {
+      margin-top: 1rem;
+      position: relative;
+      height: 40px;
+      background: #f0f0ea;
+      overflow: hidden;
+    }
+    .ep-bar-model {
+      height: 100%;
+      background: #4a6fa5;
+      transition: width 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      min-width: 2px;
+    }
+    .ep-bar-model span {
+      font-family: monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .ep-observed-line {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: #c0392b;
+      z-index: 2;
+    }
+    .ep-observed-label {
+      position: absolute;
+      top: -20px;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #c0392b;
+      white-space: nowrap;
+    }
+
+    /* ── Verdict ──────────────────────────────────────── */
+    .verdict {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      transition: background 0.3s, color 0.3s;
+    }
+    .verdict.plausible { background: #e8f5e9; color: #2e7d32; }
+    .verdict.implausible { background: #fbe9e7; color: #c62828; }
+    .verdict.extreme { background: #fff3e0; color: #e65100; }
+
+    /* ── Solution cards with badges ───────────────────── */
+    .solution-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+    .solution-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      gap: 8px;
+    }
+    .solution-name {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #222;
+      flex: 1;
+    }
+    .solution-badges {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .badge-yes { background: #e8f5e9; color: #2e7d32; }
+    .badge-no { background: #fbe9e7; color: #c62828; }
+    .badge-partial { background: #fff3e0; color: #e65100; }
+    .solution-arrow {
+      font-size: 0.9rem;
+      color: #999;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .solution-card.open .solution-arrow { transform: rotate(180deg); }
+    .solution-body {
+      display: none;
+      padding: 0 1rem 0.75rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #444;
+    }
+    .solution-card.open .solution-body { display: block; }
+    .solution-body .flaw {
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: #faf5f0;
+      border-left: 3px solid #d35400;
+      font-size: 0.85rem;
+    }
+    .solution-body .flaw strong {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #d35400;
+    }
+
+    /* ── Flow diagram ─────────────────────────────────── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin: 1.5rem 0;
+    }
+    .flow-node {
+      background: #fff;
+      border: 2px solid #1a1a1a;
+      padding: 1rem 1.25rem;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+    }
+    .flow-node .fn-year {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .flow-node .fn-author {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+    .flow-node .fn-desc {
+      font-size: 0.88rem;
+      color: #555;
+    }
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: #999;
+      padding: 4px 0;
+    }
+
+    /* ── Final verdict banner ─────────────────────────── */
+    .final-verdict {
+      background: #1a1a1a;
+      color: #f0f0f0;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+    .final-verdict p {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      max-width: 560px;
+      margin: 0 auto;
+      color: #ddd;
+    }
+    .final-verdict .fv-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #999;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Compounding visualizer ─────────────────────────── */
+    .compound-section {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+    }
+    .compound-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .compound-label {
+      width: 80px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .compound-track {
+      flex: 1;
+      height: 32px;
+      background: #eee;
+      position: relative;
+      overflow: hidden;
+    }
+    .compound-fill {
+      height: 100%;
+      transition: width 2s ease-out;
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+    }
+    .compound-fill span {
+      font-family: monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .compound-fill.stocks { background: #c0392b; }
+    .compound-fill.bonds { background: #4a6fa5; }
+    .compound-year-label {
+      text-align: center;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    /* ── Risk aversion game ──────────────────────────────── */
+    .game-section {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+    }
+    .gamble-prompt {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .gamble-prompt .win { color: #2e7d32; font-weight: 700; }
+    .gamble-prompt .lose { color: #c0392b; font-weight: 700; }
+    .gamble-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .gamble-btn {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+      font-family: Georgia, serif;
+      border: 2px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .gamble-btn:hover { border-color: #333; }
+    .gamble-btn.accept:hover { background: #e8f5e9; border-color: #2e7d32; }
+    .gamble-btn.reject:hover { background: #fbe9e7; border-color: #c62828; }
+    .game-progress {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #999;
+      margin-bottom: 0.5rem;
+    }
+    .game-result {
+      padding: 1rem;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .game-result .alpha-estimate {
+      font-size: 2rem;
+      font-family: monospace;
+      font-weight: 700;
+      color: #4a6fa5;
+    }
+
+    /* ── Absurd gamble calculator ─────────────────────────── */
+    .absurd-section {
+      margin: 1rem 0;
+      padding: 1rem 1.25rem;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+    }
+    .absurd-result {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+
+    /* ── "What world" simulator ───────────────────────────── */
+    .world-section {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+    }
+    .world-result {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .world-result.solved { background: #e8f5e9; color: #2e7d32; }
+    .world-result.unsolved { background: #fbe9e7; color: #c62828; }
+
+    /* ── Euler walkthrough ────────────────────────────────── */
+    .walkthrough {
+      margin: 1rem 0;
+    }
+    .walk-step {
+      padding: 0.75rem 1rem;
+      border-left: 3px solid #ddd;
+      margin-bottom: 0;
+      display: none;
+    }
+    .walk-step.visible {
+      display: block;
+    }
+    .walk-step.active {
+      border-left-color: #4a6fa5;
+    }
+    .walk-next {
+      display: inline-block;
+      font-size: 0.82rem;
+      color: #4a6fa5;
+      background: none;
+      border: 1px dashed #4a6fa5;
+      padding: 4px 12px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.15s;
+    }
+    .walk-next:hover { background: #4a6fa5; color: #fff; border-style: solid; }
+    .walk-next.used { display: none; }
+
+    /* ── Comparison table ─────────────────────────────────── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin: 1rem 0;
+    }
+    .compare-table th, .compare-table td {
+      border: 1px solid #ddd;
+      padding: 0.5rem 0.6rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    .compare-table th {
+      background: #f5f5f0;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .compare-table td:first-child {
+      font-weight: 600;
+      background: #fafafa;
+      width: 120px;
+    }
+
+    /* ── Quiz ─────────────────────────────────────────────── */
+    .quiz-section {
+      margin: 1.5rem 0;
+      padding: 1.25rem;
+      background: #fafafa;
+      border: 1px solid #e5e5e5;
+    }
+    .quiz-q {
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+    .quiz-opt {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #ddd;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+      text-align: left;
+      font-family: Georgia, serif;
+    }
+    .quiz-opt:hover { border-color: #4a6fa5; }
+    .quiz-opt.correct { background: #e8f5e9; border-color: #2e7d32; color: #2e7d32; }
+    .quiz-opt.wrong { background: #fbe9e7; border-color: #c62828; color: #c62828; }
+    .quiz-opt.disabled { pointer-events: none; opacity: 0.7; }
+    .quiz-explain {
+      display: none;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.85rem;
+      background: #f5f5f0;
+      border-left: 3px solid #4a6fa5;
+      margin-top: 0.5rem;
+      color: #444;
+    }
+    .quiz-explain.show { display: block; }
+    .quiz-score {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 1rem;
+    }
+
+    /* ── Decade chart ─────────────────────────────────────── */
+    .decade-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin: 1rem 0;
+    }
+    .decade-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+    }
+    .decade-label {
+      width: 70px;
+      font-family: monospace;
+      font-weight: 600;
+      color: #555;
+      flex-shrink: 0;
+    }
+    .decade-bars {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .decade-bar {
+      height: 10px;
+      min-width: 1px;
+    }
+    .decade-bar.stock { background: #c0392b; }
+    .decade-bar.bond { background: #4a6fa5; }
+    .decade-vals {
+      width: 90px;
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 500px) {
+      .comparison { grid-template-columns: 1fr; }
+      .viz-label { width: 100px; }
+      .result-panel { flex-direction: column; }
+      .slider-row { flex-wrap: wrap; }
+      .slider-row label { min-width: 100%; }
+      .gamble-buttons { flex-direction: column; }
+      .compare-table { font-size: 0.72rem; }
+      .compare-table td:first-child { width: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>The Equity Premium Puzzle</h1>
+    <p class="subtitle">A simple guide from basics to theory</p>
+
+    <div class="card">
+      <h2>The Numbers</h2>
+      <p>Over about 100 years in the U.S., stocks returned ~7% per year. <span class="term-wrap">Treasury bills<span class="info-btn" data-term="Treasury bills">i</span></span> returned ~1%. The gap is the <span class="term-wrap">equity premium<span class="info-btn" data-term="equity premium">i</span></span>.</p>
+      <div class="comparison">
+        <div class="comparison-item">
+          <div class="label">What we see in data</div>
+          <div class="value">6.18%</div>
+        </div>
+        <div class="comparison-item">
+          <div class="label">What the model can do (max)</div>
+          <div class="value">0.35%</div>
+        </div>
+      </div>
+      <p>The model can only explain a small premium. The real premium is about 18 times larger. That is the puzzle.</p>
+    </div>
+
+    <div class="viz-section">
+      <h2>The puzzle in one picture</h2>
+      <p>First: stocks return ~7%, bonds ~1%. The difference (6%) is the equity premium.</p>
+      <div class="viz-chart" style="margin-bottom: 1.5rem;">
+        <div class="viz-row">
+          <div class="viz-label">Stocks (S&P 500)</div>
+          <div class="viz-bar-wrap">
+            <div class="viz-bar observed" style="width: 100%;"></div>
+          </div>
+          <div class="viz-value">~7%</div>
+        </div>
+        <div class="viz-row">
+          <div class="viz-label">Bonds (T-bills)</div>
+          <div class="viz-bar-wrap">
+            <div class="viz-bar" style="width: 14.3%; background: #777;"></div>
+          </div>
+          <div class="viz-value">~1%</div>
+        </div>
+      </div>
+      <p style="font-size: 0.9rem; color: #666;">The gap between the two bars = equity premium (~6%).</p>
+      <p style="margin-top: 1rem;">The model can only produce 0.35% premium. Same scale:</p>
+      <div class="viz-chart">
+        <div class="viz-row">
+          <div class="viz-label">Observed (data)</div>
+          <div class="viz-bar-wrap">
+            <div class="viz-bar observed" style="width: 88.3%;"></div>
+          </div>
+          <div class="viz-value">6.18%</div>
+        </div>
+        <div class="viz-row">
+          <div class="viz-label">Model (max)</div>
+          <div class="viz-bar-wrap">
+            <div class="viz-bar model" style="width: 5%;"></div>
+          </div>
+          <div class="viz-value">0.35%</div>
+        </div>
+      </div>
+      <div class="viz-scale">0% ———————————————————————— 7%</div>
+      <div class="viz-legend">
+        <span><span class="swatch observed"></span> Observed in data</span>
+        <span><span class="swatch model"></span> Model maximum</span>
+      </div>
+
+      <details class="expandable" style="margin-top: 1rem;">
+        <summary>What does "model max" mean?</summary>
+        <div class="content">
+          <p>"Model max" means the <strong>highest</strong> equity premium the model can produce when you vary its parameters (α and β) over the ranges we think are plausible.</p>
+          <p>You try many combinations: α from 0 to 10, β from 0 to 1. For each pair, you compute the premium the model predicts. The best you can get—the maximum—is 0.35%. No plausible choice of α and β gives more than that.</p>
+        </div>
+      </details>
+
+      <details class="expandable" style="margin-top: 0.5rem;">
+        <summary>The model</summary>
+        <div class="content">
+          <p><strong>Preferences.</strong> One agent maximizes:</p>
+          <div class="formula-box">E Σ β<sup>t</sup> (c<sub>t</sub><sup>1−α</sup> − 1) / (1 − α)</div>
+          <p>β = discount factor. α = risk aversion.</p>
+          <p><strong>Economy.</strong> One "tree" produces fruit (consumption) each period. Consumption growth follows a Markov process calibrated to U.S. data. Stocks = claim on the tree. Bonds = risk-free claim.</p>
+          <p><strong>Pricing.</strong> In equilibrium, the agent is indifferent between holding stocks and bonds. The Euler equation pins down prices. From it we get:</p>
+          <div class="formula-box">ln(1 + premium) = α × σ²</div>
+          <p>where σ² is the variance of log consumption growth. So the premium rises with α and with consumption risk. With U.S. data, σ² ≈ 0.00125. With α ≤ 10, the premium stays small.</p>
+        </div>
+      </details>
+
+      <details class="expandable" style="margin-top: 0.5rem;">
+        <summary>Why can the model only produce 0.35%?</summary>
+        <div class="content">
+          <p><strong>1. Consumption is smooth.</strong> The growth rate of consumption does not vary much from year to year. In the data, its variance is small (~0.00125). So stocks are not that risky from the perspective of "when will I be able to consume?" They pay off more when consumption is already high, but consumption does not swing wildly.</p>
+          <p><strong>2. The premium is proportional to risk aversion × consumption risk.</strong> The formula is: premium = exp(α × σ²) − 1. With small σ², you need large α to get a large premium. With α = 10 (the upper bound of the "plausible" range), the model gives about 1–2% premium in the simple formula. Mehra and Prescott used a discrete Markov chain; with their calibration and α ≤ 10, the maximum they could get was 0.35%.</p>
+          <p><strong>3. We restrict α to be plausible.</strong> Most studies say α is between 1 and 5. Mehra and Prescott used 0 ≤ α ≤ 10 as a generous upper bound. If we allowed α = 50, the model could match 6%. But then people would be so risk-averse that they would pay huge sums to avoid small gambles. That does not match how people behave. So we stick to plausible α—and with that, the premium stays small.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- ═══ Compounding Visualizer ═══ -->
+    <div class="compound-section">
+      <h2>What 6% really means</h2>
+      <p>Six percent per year sounds small. But compounded over 90 years (1889-1978), $1 becomes very different amounts. Click to see.</p>
+      <div class="compound-row">
+        <div class="compound-label" style="color:#c0392b;">Stocks</div>
+        <div class="compound-track">
+          <div class="compound-fill stocks" id="compStocks" style="width:0%;">
+            <span id="compStocksVal">$1</span>
+          </div>
+        </div>
+      </div>
+      <div class="compound-row">
+        <div class="compound-label" style="color:#4a6fa5;">T-Bills</div>
+        <div class="compound-track">
+          <div class="compound-fill bonds" id="compBonds" style="width:0%;">
+            <span id="compBondsVal">$1</span>
+          </div>
+        </div>
+      </div>
+      <div class="compound-year-label" id="compYearLabel">1889 — Click "Go" to start</div>
+      <button class="gamble-btn" id="compGoBtn" onclick="startCompounding()" style="display:block;margin:0.75rem auto 0;">Go</button>
+      <p id="compConclusion" style="display:none;margin-top:0.75rem;font-size:0.9rem;text-align:center;"></p>
+    </div>
+
+    <!-- ═══ Historical Decade Returns ═══ -->
+    <div class="card">
+      <h2>Returns by decade</h2>
+      <p style="font-size:0.85rem;color:#666;margin-bottom:0.5rem;">Average real annual returns. The premium exists in nearly every decade.</p>
+      <div class="decade-chart" id="decadeChart">
+        <div class="decade-row">
+          <div class="decade-label">1889-99</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:58%"></div>
+            <div class="decade-bar bond" style="width:30%"></div>
+          </div>
+          <div class="decade-vals">S: 8.7% B: 4.5%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1900-09</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:56%"></div>
+            <div class="decade-bar bond" style="width:13%"></div>
+          </div>
+          <div class="decade-vals">S: 8.4% B: 2.0%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1910-19</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:6%"></div>
+            <div class="decade-bar bond" style="width:0%"></div>
+          </div>
+          <div class="decade-vals">S: 0.9% B:-3.5%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1920-29</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:100%"></div>
+            <div class="decade-bar bond" style="width:36%"></div>
+          </div>
+          <div class="decade-vals">S:15.0% B: 5.4%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1930-39</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:3%"></div>
+            <div class="decade-bar bond" style="width:17%"></div>
+          </div>
+          <div class="decade-vals">S: 0.5% B: 2.6%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1940-49</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:42%"></div>
+            <div class="decade-bar bond" style="width:0%"></div>
+          </div>
+          <div class="decade-vals">S: 6.3% B:-4.0%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1950-59</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:100%"></div>
+            <div class="decade-bar bond" style="width:7%"></div>
+          </div>
+          <div class="decade-vals">S:14.8% B: 1.0%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1960-69</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:38%"></div>
+            <div class="decade-bar bond" style="width:9%"></div>
+          </div>
+          <div class="decade-vals">S: 5.7% B: 1.3%</div>
+        </div>
+        <div class="decade-row">
+          <div class="decade-label">1970-78</div>
+          <div class="decade-bars">
+            <div class="decade-bar stock" style="width:6%"></div>
+            <div class="decade-bar bond" style="width:0%"></div>
+          </div>
+          <div class="decade-vals">S: 0.8% B:-0.3%</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1.5rem;font-size:0.78rem;color:#666;margin-top:0.5rem;">
+        <span><span style="display:inline-block;width:10px;height:10px;background:#c0392b;margin-right:4px;"></span>Stocks</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:#4a6fa5;margin-right:4px;"></span>T-Bills</span>
+      </div>
+      <p style="font-size:0.82rem;color:#555;margin-top:0.75rem;">Stocks beat bonds in 7 of 9 decades. Even the two exceptions (1930s, 1970s) show tiny stock returns, not large bond returns. The premium is persistent, not a fluke of one era.</p>
+    </div>
+
+    <!-- ═══ Risk Aversion Game ═══ -->
+    <div class="game-section" id="gameSection">
+      <h2>Find your risk aversion</h2>
+      <p style="font-size:0.9rem;color:#555;margin-bottom:1rem;">You have $10,000. A fair coin is flipped. Would you take each of these bets?</p>
+      <div class="game-progress" id="gameProgress">Question 1 of 6</div>
+      <div class="gamble-prompt" id="gamblePrompt">
+        Heads: you <span class="win">win $6,000</span>. Tails: you <span class="lose">lose $1,000</span>.
+      </div>
+      <div class="gamble-buttons" id="gambleButtons">
+        <button class="gamble-btn accept" onclick="answerGamble(true)">Take the bet</button>
+        <button class="gamble-btn reject" onclick="answerGamble(false)">Pass</button>
+      </div>
+      <div class="game-result" id="gameResult" style="display:none;"></div>
+    </div>
+
+    <div class="slider-section">
+      <h2>Risk aversion and the formula</h2>
+      <p><span class="term-wrap">Risk aversion<span class="info-btn" data-term="risk aversion">i</span></span> is how much you dislike risk. In the model it is measured by <span class="term-wrap">α<span class="info-btn" data-term="alpha">i</span></span> (the coefficient of relative risk aversion). Higher α means you dislike consumption going up and down more.</p>
+      <p>The equity premium in the model comes from this formula:</p>
+      <div class="formula-box">
+        ln(1 + premium) = α × σ²
+      </div>
+      <p class="formula-note">Here σ² is the variance of log consumption growth (~0.00125 in U.S. data). So: premium = exp(α × 0.00125) − 1.</p>
+      <p>When consumption growth varies, stocks are risky because they pay off more when consumption is already high (and you value that less). The premium is the reward for bearing that risk. It grows with α: more risk-averse people demand a bigger premium to hold stocks.</p>
+      <p>In the data, the variance of consumption growth is small (~0.00125). So to get a 6% premium, α must be large. Move the slider to see how the formula changes.</p>
+      <div class="slider-row">
+        <label>α =</label>
+        <input type="range" id="alphaSlider" min="1" max="60" value="10" step="1">
+        <span class="slider-value" id="alphaValue">10</span>
+      </div>
+      <div class="formula-live">
+        <div class="formula-line">With α = <strong id="alphaDisplay">10</strong>:</div>
+        <div class="formula-line">Premium = exp(α × 0.00125) − 1 = <strong id="premiumDisplay">1.26</strong>%</div>
+      </div>
+      <div class="slider-result" id="sliderResult"></div>
+
+      <!-- Absurd gamble calculator (tied to alpha slider) -->
+      <div class="absurd-section" id="absurdSection">
+        <h2 style="margin-top:0;">What this risk aversion means in practice</h2>
+        <p class="absurd-result" id="absurdResult"></p>
+      </div>
+    </div>
+
+    <!-- ═══ "What World Would Fix It?" Simulator ═══ -->
+    <div class="world-section">
+      <h2>What world would fix the puzzle?</h2>
+      <p style="font-size:0.9rem;color:#555;margin-bottom:0.75rem;">The puzzle exists because consumption is too smooth. Change the data parameters below and see what happens. What would the economy need to look like for the model to work with reasonable risk aversion (α ≤ 10)?</p>
+
+      <div class="slider-row">
+        <label>Consumption volatility (σ)</label>
+        <input type="range" id="worldSigma" min="0.01" max="0.20" step="0.005" value="0.036">
+        <span class="slider-value" id="worldSigmaVal">3.6%</span>
+      </div>
+      <p style="font-size:0.78rem;color:#888;margin-top:-0.5rem;margin-bottom:0.75rem;">Actual U.S. data: 3.6%. This is how much consumption growth varies year to year.</p>
+
+      <div class="slider-row">
+        <label>Stock-consumption correlation</label>
+        <input type="range" id="worldCorr" min="0.1" max="1.0" step="0.05" value="0.40">
+        <span class="slider-value" id="worldCorrVal">0.40</span>
+      </div>
+      <p style="font-size:0.78rem;color:#888;margin-top:-0.5rem;margin-bottom:0.75rem;">Actual: ~0.40. How closely stock returns move with consumption.</p>
+
+      <div class="slider-row">
+        <label>Stock return volatility (σ<sub>s</sub>)</label>
+        <input type="range" id="worldSigmaS" min="0.05" max="0.40" step="0.01" value="0.167">
+        <span class="slider-value" id="worldSigmaSVal">16.7%</span>
+      </div>
+      <p style="font-size:0.78rem;color:#888;margin-top:-0.5rem;margin-bottom:0.75rem;">Actual: ~16.7%. How volatile stock returns are.</p>
+
+      <div class="result-panel">
+        <div class="result-card">
+          <div class="rc-label">α needed to match 6.18%</div>
+          <div class="rc-value" id="worldAlpha" style="color:#4a6fa5;">51</div>
+          <div class="rc-sub">plausible: ≤ 10</div>
+        </div>
+        <div class="result-card">
+          <div class="rc-label">Cov(stocks, consumption)</div>
+          <div class="rc-value" id="worldCov" style="color:#333;font-size:1rem;">0.0024</div>
+          <div class="rc-sub">actual: ~0.0024</div>
+        </div>
+      </div>
+
+      <div class="world-result" id="worldResult"></div>
+    </div>
+
+    <h2>The Story in Three Papers</h2>
+    <div class="tabs">
+      <button class="tab active" data-tab="mehra">Mehra & Prescott (1985)</button>
+      <button class="tab" data-tab="weil">Weil (1989)</button>
+      <button class="tab" data-tab="kocher">Kocherlakota (1996)</button>
+    </div>
+
+    <div id="mehra" class="tab-content active">
+      <div class="card">
+        <h2>What they asked</h2>
+        <p>Can standard theory explain why stocks return so much more than safe bonds?</p>
+      </div>
+      <div class="card">
+        <h2>Main equations</h2>
+        <div class="eq-block">
+          <p>Objective:</p>
+          <div class="formula-box">max E<sub>0</sub> Σ<sub>t=0</sub><sup>∞</sup> β<sup>t</sup> (c<sub>t</sub><sup>1−α</sup> − 1) / (1 − α)</div>
+          <div class="eq-vars">
+            <p><strong>E<sub>0</sub></strong> = expectation at time 0</p>
+            <p><strong>β</strong> = discount factor (how much you value future vs. today)</p>
+            <p><strong>c<sub>t</sub></strong> = consumption at time t</p>
+            <p><strong>α</strong> = coefficient of relative risk aversion</p>
+          </div>
+        </div>
+        <div class="eq-block">
+          <p>Euler equation (pricing condition):</p>
+          <div class="formula-box">E<sub>t</sub>[β (c<sub>t+1</sub>/c<sub>t</sub>)<sup>−α</sup> R<sub>t+1</sub>] = 1</div>
+          <div class="eq-vars">
+            <p><strong>E<sub>t</sub></strong> = expectation given information at time t</p>
+            <p><strong>R<sub>t+1</sub></strong> = gross return on an asset (stocks or bonds)</p>
+          </div>
+        </div>
+        <div class="eq-block">
+          <p>Equity premium (with lognormal consumption growth):</p>
+          <div class="formula-box">ln(1 + premium) = α × σ²</div>
+          <div class="eq-vars">
+            <p><strong>premium</strong> = equity premium (extra return on stocks over bonds)</p>
+            <p><strong>σ²</strong> = variance of log consumption growth</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Assumptions</h2>
+        <ul>
+          <li>One <span class="term-wrap">representative agent<span class="info-btn" data-term="representative agent">i</span></span> with <span class="term-wrap">power utility<span class="info-btn" data-term="power utility">i</span></span></li>
+          <li>α (risk aversion) between 0 and 10; β (discount factor) between 0 and 1</li>
+          <li><span class="term-wrap">Complete markets<span class="info-btn" data-term="complete markets">i</span></span></li>
+          <li><span class="term-wrap">Frictionless<span class="info-btn" data-term="frictionless">i</span></span> trading</li>
+          <li>Consumption growth follows a two-state Markov chain that matches U.S. data (mean, variance, serial correlation)</li>
+          <li>Dividend growth is perfectly correlated with consumption growth</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>The setup</h2>
+        <ul>
+          <li>Pure exchange economy (Lucas tree)</li>
+          <li>Stocks = claim on the tree; bonds = risk-free claim</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Where does the formula come from?</h2>
+        <p style="font-size:0.85rem;color:#666;margin-bottom:0.5rem;">Click through each step to see how Mehra and Prescott derive the equity premium formula.</p>
+        <div class="walkthrough" id="eulerWalk">
+          <div class="walk-step visible active">
+            <p><strong>Step 1.</strong> The investor wants to maximize lifetime utility:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">max E<sub>0</sub> Σ β<sup>t</sup> U(c<sub>t</sub>)</div>
+            <p style="font-size:0.85rem;color:#555;">They choose how much to consume now vs. save/invest for tomorrow.</p>
+          </div>
+          <button class="walk-next" onclick="walkNext(this)">Next step</button>
+          <div class="walk-step">
+            <p><strong>Step 2.</strong> At the optimum, the investor is indifferent about buying one more unit of any asset. This gives the Euler equation:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">U'(c<sub>t</sub>) = β E<sub>t</sub>[U'(c<sub>t+1</sub>) R<sub>t+1</sub>]</div>
+            <p style="font-size:0.85rem;color:#555;">The cost of giving up consumption today (left) must equal the expected benefit of investing and consuming tomorrow (right).</p>
+          </div>
+          <button class="walk-next" onclick="walkNext(this)">Next step</button>
+          <div class="walk-step">
+            <p><strong>Step 3.</strong> Plug in power utility U(c) = c<sup>1-α</sup>/(1-α), so U'(c) = c<sup>-α</sup>:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">c<sub>t</sub><sup>-α</sup> = β E<sub>t</sub>[c<sub>t+1</sub><sup>-α</sup> R<sub>t+1</sub>]</div>
+            <p style="font-size:0.85rem;color:#555;">Divide both sides by c<sub>t</sub><sup>-α</sup>:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">1 = β E<sub>t</sub>[(c<sub>t+1</sub>/c<sub>t</sub>)<sup>-α</sup> R<sub>t+1</sub>]</div>
+          </div>
+          <button class="walk-next" onclick="walkNext(this)">Next step</button>
+          <div class="walk-step">
+            <p><strong>Step 4.</strong> Write this for both stocks (R<sup>s</sup>) and bonds (R<sup>b</sup>), subtract:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">E<sub>t</sub>[(c<sub>t+1</sub>/c<sub>t</sub>)<sup>-α</sup> (R<sup>s</sup><sub>t+1</sub> - R<sup>b</sup><sub>t+1</sub>)] = 0</div>
+            <p style="font-size:0.85rem;color:#555;">The equity premium must satisfy this condition.</p>
+          </div>
+          <button class="walk-next" onclick="walkNext(this)">Next step</button>
+          <div class="walk-step">
+            <p><strong>Step 5.</strong> If consumption growth is lognormal, take logs and use the approximation:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">E[R<sup>s</sup>] - R<sup>b</sup> ≈ α × Cov(R<sup>s</sup>, Δ ln c)</div>
+            <p style="font-size:0.85rem;color:#555;">With i.i.d. growth this simplifies to:</p>
+            <div class="formula-box" style="font-family:Georgia,serif;">ln(1 + premium) = α × σ²</div>
+            <p style="font-size:0.85rem;color:#555;">And that is the equity premium formula. With σ² ≈ 0.00125 and α ≤ 10, the right side is tiny. The puzzle.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>The result</h2>
+        <p>With plausible <span class="term-wrap">risk aversion<span class="info-btn" data-term="risk aversion">i</span></span> (α ≤ 10), the model gives at most 0.35% premium. Observed: 6.18%.</p>
+        <p><span class="term-wrap">Consumption<span class="info-btn" data-term="consumption">i</span></span> does not move enough. To justify 6%, people would need to be very risk-averse (α ≈ 50).</p>
+      </div>
+    </div>
+
+    <div id="weil" class="tab-content">
+      <div class="card">
+        <h2>What Weil tried</h2>
+        <p>Can we separate <span class="term-wrap">risk aversion<span class="info-btn" data-term="risk aversion">i</span></span> from <span class="term-wrap">intertemporal substitution<span class="info-btn" data-term="intertemporal substitution">i</span></span>? He used <span class="term-wrap">Kreps-Porteus<span class="info-btn" data-term="Kreps-Porteus">i</span></span> (or <span class="term-wrap">Epstein-Zin<span class="info-btn" data-term="Epstein-Zin">i</span></span>) preferences.</p>
+      </div>
+      <div class="card">
+        <h2>Main equations</h2>
+        <div class="eq-block">
+          <p>Recursive utility (Kreps-Porteus / Epstein-Zin):</p>
+          <div class="formula-box">U<sub>t</sub> = [(1−β)c<sub>t</sub><sup>1−ρ</sup> + β(E<sub>t</sub> U<sub>t+1</sub><sup>1−γ</sup>)<sup>(1−ρ)/(1−γ)</sup>]<sup>1/(1−ρ)</sup></div>
+          <div class="eq-vars">
+            <p><strong>U<sub>t</sub></strong> = utility at time t</p>
+            <p><strong>β</strong> = discount factor</p>
+            <p><strong>c<sub>t</sub></strong> = consumption at time t</p>
+            <p><strong>γ</strong> = coefficient of relative risk aversion (separate from ρ)</p>
+            <p><strong>ρ</strong> = parameter for intertemporal substitution (1/ρ = IES)</p>
+            <p><strong>E<sub>t</sub></strong> = expectation given information at time t</p>
+          </div>
+        </div>
+        <div class="eq-block">
+          <p>With i.i.d. consumption growth, the equity premium depends only on γ:</p>
+          <div class="formula-box">ln(1 + premium) = γ × σ²</div>
+          <div class="eq-vars">
+            <p><strong>premium</strong> = equity premium</p>
+            <p><strong>γ</strong> = risk aversion (ρ does not appear)</p>
+            <p><strong>σ²</strong> = variance of log consumption growth</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Assumptions</h2>
+        <ul>
+          <li>Same economy as Mehra-Prescott (Lucas tree, Markov dividend process)</li>
+          <li>But: <span class="term-wrap">Kreps-Porteus<span class="info-btn" data-term="Kreps-Porteus">i</span></span> preferences instead of time-additive expected utility</li>
+          <li>Two separate parameters: γ (risk aversion) and ρ (intertemporal substitution)</li>
+          <li><span class="term-wrap">Complete markets<span class="info-btn" data-term="complete markets">i</span></span>, <span class="term-wrap">frictionless<span class="info-btn" data-term="frictionless">i</span></span> trading</li>
+          <li>Same calibration as Mehra-Prescott (two-state Markov, U.S. data)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>The result</h2>
+        <p>With <span class="term-wrap">i.i.d.<span class="info-btn" data-term="i.i.d.">i</span></span> growth, the <span class="term-wrap">equity premium<span class="info-btn" data-term="equity premium">i</span></span> depends only on risk aversion (γ), not on <span class="term-wrap">intertemporal substitution<span class="info-btn" data-term="intertemporal substitution">i</span></span>. So the fix does not work.</p>
+        <p>He also added the <span class="term-wrap">risk-free rate puzzle<span class="info-btn" data-term="risk-free rate puzzle">i</span></span>: if people dislike consumption swings, why is the <span class="term-wrap">risk-free rate<span class="info-btn" data-term="risk-free rate">i</span></span> so low?</p>
+      </div>
+
+      <div class="interactive-box">
+        <h4>Try it: Weil's two independent knobs</h4>
+
+        <div class="slider-row">
+          <label for="gammaSlider">Risk aversion (γ)</label>
+          <input type="range" id="gammaSlider" min="0.5" max="15" step="0.5" value="2">
+          <span class="slider-value" id="gammaVal">2.0</span>
+        </div>
+
+        <div class="slider-row">
+          <label for="iesSlider">IES (1/ρ)</label>
+          <input type="range" id="iesSlider" min="0.1" max="2" step="0.05" value="1">
+          <span class="slider-value" id="iesVal">1.00</span>
+        </div>
+
+        <div style="position:relative;margin-top:1rem;">
+          <div class="ep-bar-container">
+            <div class="ep-bar-model" id="weilBarModel">
+              <span id="weilBarLabel">0.12%</span>
+            </div>
+            <div class="ep-observed-line" id="weilObsLine" style="left:77%">
+              <div class="ep-observed-label">Observed: 6.18%</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:0.7rem;color:#999;">0%</span>
+            <span style="font-size:0.7rem;color:#999;">Predicted equity premium</span>
+            <span style="font-size:0.7rem;color:#999;">8%</span>
+          </div>
+        </div>
+
+        <div class="result-panel">
+          <div class="result-card">
+            <div class="rc-label">Predicted EP</div>
+            <div class="rc-value" id="weilEP" style="color:#4a6fa5;">0.12%</div>
+            <div class="rc-sub">needed: ~6.18%</div>
+          </div>
+          <div class="result-card">
+            <div class="rc-label">Predicted risk-free rate</div>
+            <div class="rc-value" id="weilRF" style="color:#333;">7.0%</div>
+            <div class="rc-sub">observed: ~0.8%</div>
+          </div>
+        </div>
+
+        <div class="verdict" id="weilVerdict">
+          <span id="weilVerdictText"></span>
+        </div>
+
+        <p style="font-size:0.85rem;color:#666;margin-top:0.75rem;">Notice: moving the IES slider barely changes the equity premium -- it just makes the risk-free rate better or worse. The extra knob does not help.</p>
+      </div>
+    </div>
+
+    <div id="kocher" class="tab-content">
+      <div class="card">
+        <h2>What Kocherlakota did</h2>
+        <p>He wrote a survey. He showed the puzzles are robust and come from only three assumptions. Any fix must relax at least one.</p>
+      </div>
+      <div class="card">
+        <h2>Main equations</h2>
+        <p>Kocherlakota uses the same model as Mehra-Prescott. The key conditions are:</p>
+        <div class="eq-block">
+          <p>Equity premium condition:</p>
+          <div class="formula-box">E[(C<sub>t+1</sub>/C<sub>t</sub>)<sup>−α</sup> (R<sub>t+1</sub><sup>s</sup> − R<sub>t+1</sub><sup>b</sup>)] = 0</div>
+          <div class="eq-vars">
+            <p><strong>C<sub>t</sub></strong> = per capita consumption at time t</p>
+            <p><strong>α</strong> = coefficient of relative risk aversion</p>
+            <p><strong>R<sub>t+1</sub><sup>s</sup></strong> = gross return on stocks</p>
+            <p><strong>R<sub>t+1</sub><sup>b</sup></strong> = gross return on bonds</p>
+            <p><strong>E</strong> = unconditional expectation</p>
+          </div>
+        </div>
+        <div class="eq-block">
+          <p>Risk-free rate condition:</p>
+          <div class="formula-box">β E[(C<sub>t+1</sub>/C<sub>t</sub>)<sup>−α</sup> R<sub>t+1</sub><sup>b</sup>] = 1</div>
+          <div class="eq-vars">
+            <p><strong>β</strong> = discount factor</p>
+          </div>
+        </div>
+        <p style="margin-top: 0.75rem;">If these hold with per capita consumption, the puzzles emerge. Any model that relaxes power utility, complete markets, or frictionless trading can avoid them.</p>
+      </div>
+      <div class="card">
+        <h2>Assumptions</h2>
+        <p>Kocherlakota showed the puzzles come from only three things. Any fix must change at least one:</p>
+        <ol>
+          <li><span class="term-wrap">Power utility<span class="info-btn" data-term="power utility">i</span></span> with plausible <span class="term-wrap">α<span class="info-btn" data-term="alpha">i</span></span> and <span class="term-wrap">β<span class="info-btn" data-term="beta">i</span></span></li>
+          <li><span class="term-wrap">Complete markets<span class="info-btn" data-term="complete markets">i</span></span></li>
+          <li><span class="term-wrap">Frictionless<span class="info-btn" data-term="frictionless">i</span></span> trading</li>
+        </ol>
+        <p style="margin-top: 0.75rem;">He showed the puzzles do not depend on the exact consumption process, sampling error, or the assumption that dividends equal consumption. Only these three matter.</p>
+      </div>
+      <div class="card">
+        <h2>Survey of fixes</h2>
+        <p>In the decade after Mehra and Prescott, economists tried every route. Kocherlakota surveyed them all. Click each approach to see what it tried and why it fell short.</p>
+        <p style="font-size:0.78rem;color:#888;margin-bottom:0.75rem;">Badges show whether the approach can explain the equity premium (EP) and the risk-free rate (RF).</p>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Epstein-Zin / Generalized Expected Utility</span>
+            <div class="solution-badges">
+              <span class="badge badge-no">EP: No</span>
+              <span class="badge badge-yes">RF: Yes</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> Separate risk aversion from intertemporal substitution, giving two independent knobs instead of one.</p>
+            <p><strong>On the risk-free rate:</strong> It works. By setting IES independently, the model can match the low observed risk-free rate.</p>
+            <div class="flaw">
+              <strong>Why it fails on the EP:</strong> The equity premium is governed almost exclusively by risk aversion, regardless of IES. You still need implausibly high risk aversion to match the data.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Habit Formation</span>
+            <div class="solution-badges">
+              <span class="badge badge-no">EP: No</span>
+              <span class="badge badge-yes">RF: Yes</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> Your happiness depends on what you consumed yesterday. If you drove a BMW last year, going back to a cheaper car feels painful. This amplifies risk aversion.</p>
+            <p><strong>On the risk-free rate:</strong> Helps a lot. Since people are "hooked" on their current level, they save more, pushing the rate down.</p>
+            <div class="flaw">
+              <strong>Why it fails on the EP:</strong> When consumption growth is hard to predict (which it is), the extra risk aversion from habits does not transfer into a higher equity premium in the formal model.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">"Keeping Up with the Joneses"</span>
+            <div class="solution-badges">
+              <span class="badge badge-partial">EP: Partial</span>
+              <span class="badge badge-partial">RF: Partial</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> People care about how they compare to everyone else. If everyone's consumption falls, you feel extra pain beyond just your own loss.</p>
+            <div class="flaw">
+              <strong>Why it falls short:</strong> Can match the EP, but requires an unrealistically extreme concern about relative standing. Also needs habit-like effects to explain the low risk-free rate simultaneously.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Incomplete Markets (Uninsurable Income Risk)</span>
+            <div class="solution-badges">
+              <span class="badge badge-no">EP: No</span>
+              <span class="badge badge-no">RF: No</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> Real people cannot insure against everything -- job loss, health shocks. Individual consumption is more volatile than the aggregate.</p>
+            <div class="flaw">
+              <strong>Why it fails:</strong> In a long-lived economy, people smooth income shocks by saving during good years and spending during bad years (dynamic self-insurance). This works well enough that the incomplete-markets equilibrium looks very similar to the complete-markets one.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Borrowing Constraints</span>
+            <div class="solution-badges">
+              <span class="badge badge-no">EP: No</span>
+              <span class="badge badge-yes">RF: Yes</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> If people cannot borrow against future income, they hold extra safe assets as a buffer. This pushes the risk-free rate down.</p>
+            <div class="flaw">
+              <strong>Why it fails on the EP:</strong> Constrained investors are constrained in both markets. Both returns get pushed down together, leaving the spread roughly unchanged.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Transaction Costs</span>
+            <div class="solution-badges">
+              <span class="badge badge-partial">EP: Only if...</span>
+              <span class="badge badge-no">RF: N/A</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> Stocks are more expensive to trade than bonds. Part of the premium compensates for these costs, not for risk.</p>
+            <div class="flaw">
+              <strong>Why it falls short:</strong> For a buy-and-hold investor, the annualized cost shrinks the longer they hold. Only dramatically higher stock trading costs would explain the gap, and there is little evidence for that.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Rare Disasters</span>
+            <div class="solution-badges">
+              <span class="badge badge-partial">EP: Possible</span>
+              <span class="badge badge-no">RF: Wrong</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> Investors fear a small probability of catastrophe -- a Great Depression, a war. Even if these did not happen in the sample, the fear could justify a high EP.</p>
+            <div class="flaw">
+              <strong>Why it is unconvincing:</strong> In a disaster, the model predicts real interest rates should spike -- but historically they did not. Also, the disaster probability is a free parameter: you can match any EP by picking the right probability, making the theory untestable.
+            </div>
+          </div>
+        </div>
+
+        <div class="solution-card" onclick="toggleCard(this)">
+          <div class="solution-header" tabindex="0" role="button" aria-expanded="false">
+            <span class="solution-name">Survivorship Bias</span>
+            <div class="solution-badges">
+              <span class="badge badge-no">EP: No</span>
+              <span class="badge badge-no">RF: No</span>
+            </div>
+            <span class="solution-arrow">&#9660;</span>
+          </div>
+          <div class="solution-body">
+            <p><strong>The idea:</strong> We study the U.S. because it survived and thrived. Markets that collapsed are not in the data.</p>
+            <div class="flaw">
+              <strong>Why it fails:</strong> In catastrophic episodes, bonds also suffered -- governments defaulted, hyperinflation wiped out bondholders. So the spread between stocks and bonds should not be dramatically affected by looking only at survivors.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Paper Comparison Table ═══ -->
+    <div class="card">
+      <h2>Three papers at a glance</h2>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Mehra & Prescott (1985)</th>
+            <th>Weil (1989)</th>
+            <th>Kocherlakota (1996)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Type</td>
+            <td>Original paper</td>
+            <td>Extension</td>
+            <td>Survey</td>
+          </tr>
+          <tr>
+            <td>Utility</td>
+            <td>Power utility (CRRA)</td>
+            <td>Kreps-Porteus / Epstein-Zin</td>
+            <td>Same as M&P; surveys alternatives</td>
+          </tr>
+          <tr>
+            <td>Key parameters</td>
+            <td>α (risk aversion = 1/IES)</td>
+            <td>γ (risk aversion), ρ (1/IES), independent</td>
+            <td>α, β (same framework)</td>
+          </tr>
+          <tr>
+            <td>Main finding</td>
+            <td>Model produces max 0.35% premium with plausible α</td>
+            <td>Separating γ and ρ does not help the EP; discovers risk-free rate puzzle</td>
+            <td>Puzzle is robust; comes from 3 assumptions; no fix fully works</td>
+          </tr>
+          <tr>
+            <td>Explains EP?</td>
+            <td style="color:#c62828;">No</td>
+            <td style="color:#c62828;">No</td>
+            <td style="color:#c62828;">No (surveys why)</td>
+          </tr>
+          <tr>
+            <td>Explains RF puzzle?</td>
+            <td style="color:#888;">Not addressed</td>
+            <td style="color:#e65100;">Partially (with IES)</td>
+            <td style="color:#e65100;">Some fixes help</td>
+          </tr>
+          <tr>
+            <td>Markets</td>
+            <td>Complete, frictionless</td>
+            <td>Complete, frictionless</td>
+            <td>Surveys relaxations</td>
+          </tr>
+          <tr>
+            <td>Data period</td>
+            <td>1889-1978</td>
+            <td>Same as M&P</td>
+            <td>Same + extended samples</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>More detail</h2>
+    <details class="expandable">
+      <summary>What is the equity premium?</summary>
+      <div class="content">
+        The extra return you get for holding stocks instead of safe government bonds. Over ~100 years in the U.S., stocks returned ~7% per year, T-bills ~1% per year. The 6% gap is the equity premium. Theory says it should reflect how risky stocks are and how much people dislike risk. The puzzle: consumption is fairly smooth, so stocks are not that risky—yet the premium is large.
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>Why does the model fail?</summary>
+      <div class="content">
+        The equity premium is roughly α times the covariance of consumption growth with stock returns. Consumption growth has low variance and low covariance with stocks. So to get 6%, α must be ~40–50. But micro evidence suggests α is 1–5. And if you set α = 50, the model predicts a risk-free rate of 10%+ instead of 1%.
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>What did Weil prove?</summary>
+      <div class="content">
+        With i.i.d. dividend and consumption growth, the equity premium does not depend on the intertemporal elasticity of substitution. It depends only on risk aversion. So separating them does not help the equity premium. It can help the risk-free rate puzzle, but often makes it worse when you calibrate realistically.
+      </div>
+    </details>
+
+    <details class="expandable">
+      <summary>What fixes have been tried?</summary>
+      <div class="content">
+        Preferences: Epstein-Zin (does not fix equity premium), habit formation (limited), relative consumption. Markets: incomplete markets, idiosyncratic risk, borrowing constraints. Distribution: disaster states, survivorship bias—both criticized. Bottom line: the risk-free rate puzzle has plausible explanations; the equity premium puzzle is still open.
+      </div>
+    </details>
+
+    <!-- ═══ Quiz ═══ -->
+    <div class="quiz-section" id="quizSection">
+      <h2>Test your understanding</h2>
+
+      <div class="quiz-item" data-correct="c">
+        <p class="quiz-q">1. Why is the equity premium a "puzzle"?</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-val="a" onclick="checkQuiz(this)">Stocks returned less than expected</button>
+          <button class="quiz-opt" data-val="b" onclick="checkQuiz(this)">The risk-free rate was too high</button>
+          <button class="quiz-opt" data-val="c" onclick="checkQuiz(this)">Standard models cannot explain why the gap between stocks and bonds is so large</button>
+          <button class="quiz-opt" data-val="d" onclick="checkQuiz(this)">Investors were irrational during 1889-1978</button>
+        </div>
+        <div class="quiz-explain">The puzzle is that consumption-based models predict a much smaller equity premium than the 6.18% observed. With plausible risk aversion, the model tops out at about 0.35%.</div>
+      </div>
+
+      <div class="quiz-item" data-correct="b">
+        <p class="quiz-q">2. What is the root cause of the puzzle?</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-val="a" onclick="checkQuiz(this)">Stock returns are too volatile</button>
+          <button class="quiz-opt" data-val="b" onclick="checkQuiz(this)">Aggregate consumption is too smooth</button>
+          <button class="quiz-opt" data-val="c" onclick="checkQuiz(this)">The discount factor is too low</button>
+          <button class="quiz-opt" data-val="d" onclick="checkQuiz(this)">There are too many investors in the market</button>
+        </div>
+        <div class="quiz-explain">Consumption barely moves year to year. Since the model prices risk based on how assets co-move with consumption, smooth consumption means stocks look almost as safe as bonds. A small covariance times reasonable risk aversion gives a small premium.</div>
+      </div>
+
+      <div class="quiz-item" data-correct="a">
+        <p class="quiz-q">3. What did Weil (1989) discover?</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-val="a" onclick="checkQuiz(this)">Separating risk aversion from IES does not help the equity premium, and reveals a second puzzle about the risk-free rate</button>
+          <button class="quiz-opt" data-val="b" onclick="checkQuiz(this)">The equity premium disappears with Epstein-Zin preferences</button>
+          <button class="quiz-opt" data-val="c" onclick="checkQuiz(this)">Habit formation fully explains the premium</button>
+          <button class="quiz-opt" data-val="d" onclick="checkQuiz(this)">The data from 1889-1978 was measured incorrectly</button>
+        </div>
+        <div class="quiz-explain">With i.i.d. consumption growth, the equity premium depends only on risk aversion (γ), not on intertemporal substitution. The new parameter helps the risk-free rate but not the EP. Worse, he uncovered the risk-free rate puzzle: why do people save so much at such a low rate?</div>
+      </div>
+
+      <div class="quiz-item" data-correct="c">
+        <p class="quiz-q">4. According to Kocherlakota, the puzzle comes from which three assumptions?</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-val="a" onclick="checkQuiz(this)">Efficient markets, rational expectations, no taxes</button>
+          <button class="quiz-opt" data-val="b" onclick="checkQuiz(this)">Lognormal returns, constant growth, infinite horizon</button>
+          <button class="quiz-opt" data-val="c" onclick="checkQuiz(this)">Power utility with plausible parameters, complete markets, frictionless trading</button>
+          <button class="quiz-opt" data-val="d" onclick="checkQuiz(this)">Risk neutrality, constant interest rates, no borrowing</button>
+        </div>
+        <div class="quiz-explain">Kocherlakota showed the puzzle survives regardless of the consumption process, sample period, or dividend assumptions. It comes from just three things: (1) power utility with reasonable α and β, (2) complete markets, and (3) frictionless trading. Any fix must relax at least one.</div>
+      </div>
+
+      <div class="quiz-item" data-correct="d">
+        <p class="quiz-q">5. Why does "habit formation" fail to fully solve the puzzle?</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" data-val="a" onclick="checkQuiz(this)">It makes people less risk-averse</button>
+          <button class="quiz-opt" data-val="b" onclick="checkQuiz(this)">It was never formally tested</button>
+          <button class="quiz-opt" data-val="c" onclick="checkQuiz(this)">It makes the risk-free rate too high</button>
+          <button class="quiz-opt" data-val="d" onclick="checkQuiz(this)">When consumption growth is hard to predict, the extra risk aversion from habits does not translate into a higher equity premium</button>
+        </div>
+        <div class="quiz-explain">Habit formation amplifies sensitivity to consumption drops, but the formal result shows that when consumption growth is unpredictable (which it is in reality), the amplified risk aversion does not produce a larger equity premium in the model. It does help the risk-free rate, though.</div>
+      </div>
+
+      <div class="quiz-score" id="quizScore" style="display:none;"></div>
+    </div>
+
+    <h2>Timeline</h2>
+    <div class="flow">
+      <div class="flow-node">
+        <div class="fn-year">1985</div>
+        <div class="fn-author">Mehra &amp; Prescott</div>
+        <div class="fn-desc">Stocks earn 6% more than bonds. Our best model says they should not.</div>
+      </div>
+      <div class="flow-arrow">&#8595;</div>
+      <div class="flow-node">
+        <div class="fn-year">1989</div>
+        <div class="fn-author">Weil</div>
+        <div class="fn-desc">Separating risk aversion from time preferences does not help. And now we have a <em>second</em> puzzle: why is the risk-free rate so low?</div>
+      </div>
+      <div class="flow-arrow">&#8595;</div>
+      <div class="flow-node">
+        <div class="fn-year">1996</div>
+        <div class="fn-author">Kocherlakota</div>
+        <div class="fn-desc">After a decade of attempts, the equity premium remains unexplained. No proposed fix avoids implausible assumptions.</div>
+      </div>
+    </div>
+
+    <div class="final-verdict">
+      <div class="fv-title">The core tension</div>
+      <p>
+        Aggregate consumption is too smooth relative to stock returns for any reasonably risk-averse investor to demand a 6% premium for holding stocks over bonds. Every modification to preferences, market structure, or statistical assumptions tried over the first decade of research failed to convincingly change this arithmetic.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    var definitions = {
+      "equity premium": "The extra return on stocks over safe bonds. About 6% per year in the U.S. over the past century.",
+      "Treasury bills": "Short-term government debt. Very safe. Returned about 1% per year in real terms.",
+      "risk aversion": "How much you dislike risk. Higher risk aversion means you prefer steady outcomes over risky ones.",
+      "consumption": "What people spend. In the model, consumption growth is how much spending grows each year.",
+      "representative agent": "One average person standing in for everyone. A simplification used in many models.",
+      "power utility": "A standard way to model preferences. U(c) = c^(1−α)/(1−α). Higher α means more risk aversion.",
+      "complete markets": "People can trade assets to insure against any future event. No uninsurable risks.",
+      "risk-free rate": "The return on safe bonds. About 1% per year in the U.S. data.",
+      "risk-free rate puzzle": "If people are very risk-averse (to match the equity premium), why do they save so much when the risk-free rate is so low?",
+      "Kreps-Porteus": "A type of preferences that lets you separate risk aversion from intertemporal substitution.",
+      "Epstein-Zin": "Same idea as Kreps-Porteus. A way to have risk aversion and intertemporal substitution as separate parameters.",
+      "intertemporal substitution": "How willing you are to shift consumption over time. High means you are okay with consumption growing over time.",
+      "i.i.d.": "Independent and identically distributed. Each year’s growth is independent of past years.",
+      "frictionless": "No taxes, no transaction costs, no borrowing limits. Trading is free and easy.",
+      "alpha": "The coefficient of relative risk aversion (CRRA). How much you dislike risk. Higher α means more risk-averse. Most studies say it is between 1 and 5.",
+      "beta": "The discount factor. How much you value future consumption vs. today. β = 0.99 means you value next year 1% less than this year."
+    };
+
+    var tooltipEl = document.createElement('div');
+    tooltipEl.id = 'tooltip';
+    tooltipEl.className = 'tooltip';
+    document.body.appendChild(tooltipEl);
+
+    document.querySelectorAll('.info-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var term = this.getAttribute('data-term');
+        var def = definitions[term];
+        if (def) {
+          tooltipEl.textContent = def;
+          tooltipEl.classList.add('show');
+          var rect = this.getBoundingClientRect();
+          tooltipEl.style.left = rect.left + 'px';
+          tooltipEl.style.top = (rect.bottom + 4) + 'px';
+          tooltipEl.style.position = 'fixed';
+        }
+      });
+    });
+
+    document.addEventListener('click', function() {
+      tooltipEl.classList.remove('show');
+    });
+
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+        document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+        tab.classList.add('active');
+        document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+      });
+    });
+
+    var alphaSlider = document.getElementById('alphaSlider');
+    var alphaValue = document.getElementById('alphaValue');
+    var sliderResult = document.getElementById('sliderResult');
+
+    var sigmaSq = 0.00125;
+    var alphaDisplayEl = document.getElementById('alphaDisplay');
+    var premiumDisplayEl = document.getElementById('premiumDisplay');
+
+    function updateSlider() {
+      var alpha = parseInt(alphaSlider.value);
+      alphaValue.textContent = alpha;
+      alphaDisplayEl.textContent = alpha;
+
+      var premium = (Math.exp(alpha * sigmaSq) - 1) * 100;
+      premiumDisplayEl.textContent = premium.toFixed(2);
+
+      if (alpha <= 10) {
+        sliderResult.textContent = 'This is in the "plausible" range. But the premium is only ' + premium.toFixed(2) + '%. You need α ≈ 48 to match the observed 6.18%.';
+      } else if (alpha >= 45 && alpha <= 55) {
+        sliderResult.textContent = 'This matches the data (premium ≈ 6%). But then the risk-free rate explodes to 10%+ in the model. Observed: ~1%.';
+      } else if (alpha > 55) {
+        sliderResult.textContent = 'Too high. People would pay huge sums to avoid small gambles. Most studies say α is between 1 and 5.';
+      } else {
+        sliderResult.textContent = 'Premium is ' + premium.toFixed(2) + '%. Still need α ≈ 48 to hit 6.18%.';
+      }
+    }
+
+    alphaSlider.addEventListener('input', updateSlider);
+    updateSlider();
+
+    /* ── Weil two-knob slider ──────────────────────────── */
+    var gammaSlider = document.getElementById('gammaSlider');
+    var iesSlider = document.getElementById('iesSlider');
+    var gammaVal = document.getElementById('gammaVal');
+    var iesVal = document.getElementById('iesVal');
+    var weilEP = document.getElementById('weilEP');
+    var weilRF = document.getElementById('weilRF');
+    var weilBarModel = document.getElementById('weilBarModel');
+    var weilBarLabel = document.getElementById('weilBarLabel');
+    var weilVerdict = document.getElementById('weilVerdict');
+    var weilVerdictText = document.getElementById('weilVerdictText');
+
+    function computeWeil(gamma, ies) {
+      var g = 0.018;
+      var sigma = 0.036;
+      var beta = 0.95;
+      var cov_rc = 0.001346;
+
+      var rho = 1 / ies;
+      var ep = gamma * cov_rc * 100 * (1 + 0.05 * (rho - gamma) / (1 + Math.abs(rho - gamma)));
+      var rf = (-Math.log(beta) + (1/ies) * g - 0.5 * (1 + 1/ies) * gamma * sigma * sigma) * 100;
+
+      return { ep: Math.max(0, ep), rf: rf };
+    }
+
+    function updateWeilSlider() {
+      var g = parseFloat(gammaSlider.value);
+      var ies = parseFloat(iesSlider.value);
+      gammaVal.textContent = g.toFixed(1);
+      iesVal.textContent = ies.toFixed(2);
+
+      var result = computeWeil(g, ies);
+      weilEP.textContent = result.ep.toFixed(2) + '%';
+      weilRF.textContent = result.rf.toFixed(1) + '%';
+
+      var pct = Math.min(100, (result.ep / 8) * 100);
+      weilBarModel.style.width = Math.max(0.5, pct) + '%';
+      weilBarLabel.textContent = result.ep < 0.01 ? '<0.01%' : result.ep.toFixed(2) + '%';
+
+      if (pct < 5) {
+        weilBarLabel.style.color = '#4a6fa5';
+        weilBarLabel.style.position = 'absolute';
+        weilBarLabel.style.left = 'calc(100% + 8px)';
+        weilBarLabel.style.right = 'auto';
+      } else {
+        weilBarLabel.style.color = '#fff';
+        weilBarLabel.style.position = '';
+        weilBarLabel.style.left = '';
+        weilBarLabel.style.right = '';
+      }
+
+      var epOk = result.ep >= 5.0;
+      var rfOk = result.rf >= -1 && result.rf <= 3;
+
+      if (epOk && rfOk) {
+        weilVerdict.className = 'verdict plausible';
+        weilVerdictText.innerHTML = 'Both values are in the right ballpark, but gamma = ' + g.toFixed(1) + ' is ' + (g <= 10 ? 'at the edge of plausibility.' : 'implausibly high.');
+      } else if (!epOk && rfOk) {
+        weilVerdict.className = 'verdict extreme';
+        weilVerdictText.innerHTML = 'The risk-free rate is reasonable, but the equity premium (' + result.ep.toFixed(2) + '%) is far below 6.18%. <strong>This is the equity premium puzzle.</strong>';
+      } else if (epOk && !rfOk) {
+        weilVerdict.className = 'verdict extreme';
+        weilVerdictText.innerHTML = 'The equity premium is close, but the predicted risk-free rate (' + result.rf.toFixed(1) + '%) is far from the observed 0.8%. <strong>This is the risk-free rate puzzle.</strong>';
+      } else {
+        weilVerdict.className = 'verdict implausible';
+        weilVerdictText.innerHTML = 'Neither value matches. EP is too low (' + result.ep.toFixed(2) + '% vs 6.18%) and the risk-free rate is wrong (' + result.rf.toFixed(1) + '% vs 0.8%). <strong>Both puzzles persist.</strong>';
+      }
+    }
+
+    gammaSlider.addEventListener('input', updateWeilSlider);
+    iesSlider.addEventListener('input', updateWeilSlider);
+    updateWeilSlider();
+
+    /* ── Solution card toggle ──────────────────────────── */
+    window.toggleCard = function(card) {
+      var wasOpen = card.classList.contains('open');
+      document.querySelectorAll('.solution-card').forEach(function(c) {
+        c.classList.remove('open');
+        var hdr = c.querySelector('.solution-header');
+        if (hdr) hdr.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        card.classList.add('open');
+        card.querySelector('.solution-header').setAttribute('aria-expanded', 'true');
+      }
+    };
+
+    /* ── Compounding Visualizer ────────────────────────── */
+    window.startCompounding = function() {
+      var btn = document.getElementById('compGoBtn');
+      btn.style.display = 'none';
+      var stocksEl = document.getElementById('compStocks');
+      var bondsEl = document.getElementById('compBonds');
+      var stocksVal = document.getElementById('compStocksVal');
+      var bondsVal = document.getElementById('compBondsVal');
+      var yearLabel = document.getElementById('compYearLabel');
+      var conclusion = document.getElementById('compConclusion');
+
+      var stockRate = 1.07;
+      var bondRate = 1.01;
+      var stockTotal = 1;
+      var bondTotal = 1;
+      var year = 1889;
+      var endYear = 1978;
+      var maxStocks = Math.pow(stockRate, endYear - 1889);
+
+      function step() {
+        if (year > endYear) {
+          conclusion.style.display = 'block';
+          conclusion.innerHTML = '<strong>$1 in stocks became $' + Math.round(stockTotal) + '.</strong> $1 in bonds became $' + bondTotal.toFixed(1) + '. Same starting point, same 90 years. That is the power of 6% compounded.';
+          return;
+        }
+        stockTotal *= stockRate;
+        bondTotal *= bondRate;
+        var stockPct = (stockTotal / maxStocks) * 100;
+        var bondPct = (bondTotal / maxStocks) * 100;
+        stocksEl.style.width = Math.max(1, stockPct) + '%';
+        bondsEl.style.width = Math.max(0.5, bondPct) + '%';
+        stocksVal.textContent = '$' + Math.round(stockTotal);
+        bondsVal.textContent = '$' + bondTotal.toFixed(1);
+        yearLabel.textContent = year;
+        year++;
+        setTimeout(step, year < 1920 ? 60 : year < 1950 ? 40 : 25);
+      }
+      step();
+    };
+
+    /* ── Risk Aversion Game ───────────────────────────── */
+    var gambles = [
+      { win: 6000, lose: 1000, threshold: 15 },
+      { win: 3000, lose: 1000, threshold: 8 },
+      { win: 2000, lose: 1000, threshold: 4 },
+      { win: 1500, lose: 1000, threshold: 2.5 },
+      { win: 1200, lose: 1000, threshold: 1.2 },
+      { win: 1000, lose: 1000, threshold: 0 }
+    ];
+    var gameIdx = 0;
+    var firstReject = -1;
+
+    function showGamble() {
+      var g = gambles[gameIdx];
+      document.getElementById('gameProgress').textContent = 'Question ' + (gameIdx + 1) + ' of ' + gambles.length;
+      document.getElementById('gamblePrompt').innerHTML =
+        'Heads: you <span class="win">win $' + g.win.toLocaleString() + '</span>. Tails: you <span class="lose">lose $' + g.lose.toLocaleString() + '</span>.';
+    }
+
+    window.answerGamble = function(accepted) {
+      if (!accepted && firstReject < 0) {
+        firstReject = gameIdx;
+      }
+      gameIdx++;
+      if (gameIdx >= gambles.length) {
+        showGameResult();
+        return;
+      }
+      showGamble();
+    };
+
+    function showGameResult() {
+      document.getElementById('gambleButtons').style.display = 'none';
+      document.getElementById('gamblePrompt').style.display = 'none';
+      document.getElementById('gameProgress').style.display = 'none';
+      var result = document.getElementById('gameResult');
+      result.style.display = 'block';
+
+      var alphaEst;
+      if (firstReject < 0) {
+        alphaEst = 0;
+      } else {
+        alphaEst = gambles[firstReject].threshold;
+      }
+
+      var interpretation;
+      if (alphaEst <= 0) {
+        interpretation = 'You are essentially risk-neutral. You accept any bet with positive expected value.';
+      } else if (alphaEst <= 2) {
+        interpretation = 'You are mildly risk-averse. This is common among young professionals and experienced investors.';
+      } else if (alphaEst <= 5) {
+        interpretation = 'You are moderately risk-averse. This is the most common range in experimental studies.';
+      } else if (alphaEst <= 10) {
+        interpretation = 'You are fairly risk-averse. You prefer safety even when the odds are in your favor.';
+      } else {
+        interpretation = 'You are quite risk-averse. You need very favorable odds to take on any gamble.';
+      }
+
+      var alphaNeeded = 48;
+      result.innerHTML =
+        '<div class="alpha-estimate">Your α ≈ ' + alphaEst + '</div>' +
+        '<p style="margin-top:0.5rem;">' + interpretation + '</p>' +
+        '<p style="margin-top:0.75rem;font-size:0.9rem;color:#555;">To explain the 6.18% equity premium, the model needs α ≈ <strong>' + alphaNeeded + '</strong>. ' +
+        (alphaEst < alphaNeeded
+          ? 'That is <strong>' + Math.round(alphaNeeded / Math.max(alphaEst, 0.5)) + 'x</strong> your level. At α = ' + alphaNeeded + ', you would reject a coin flip between winning $10,000 and losing $100. Nobody behaves that way.'
+          : 'Your risk aversion is unusually high, but even so the model needs extreme values.') +
+        '</p>' +
+        '<p style="margin-top:0.5rem;font-size:0.85rem;color:#4a6fa5;">Scroll down to the slider to see what happens at your α.</p>';
+    }
+
+    /* ── Absurd Gamble Calculator ─────────────────────── */
+    function updateAbsurd() {
+      var a = parseInt(alphaSlider.value);
+      var absurdEl = document.getElementById('absurdResult');
+      if (a <= 1) {
+        absurdEl.innerHTML = 'At α = ' + a + ', you are nearly risk-neutral. You would accept almost any bet with positive expected value.';
+      } else if (a <= 5) {
+        var reject = Math.round(100 * a / (a + 1));
+        absurdEl.innerHTML = 'At α = ' + a + ', you would reject a 50/50 bet between <strong>winning $200</strong> and <strong>losing $' + reject + '</strong>. This is within the normal range of human risk aversion.';
+      } else if (a <= 15) {
+        var lossAmt = Math.round(50 / a * 10);
+        absurdEl.innerHTML = 'At α = ' + a + ', you would refuse a 50/50 bet between <strong>winning $1,000</strong> and <strong>losing $' + lossAmt + '</strong>. You are very cautious -- giving up large expected gains to avoid moderate losses.';
+      } else if (a <= 30) {
+        absurdEl.innerHTML = 'At α = ' + a + ', you would refuse a 50/50 bet between <strong>winning $10,000</strong> and <strong>losing $' + Math.round(500 / a * 10) + '</strong>. You are turning down lottery-like odds. Very few real people behave this way.';
+      } else {
+        absurdEl.innerHTML = 'At α = ' + a + ', you would refuse a 50/50 bet between <strong>winning $1,000,000</strong> and <strong>losing $1,000</strong>. This is 1000:1 odds in your favor, and you still say no. No real person is this terrified of risk. Yet the equity premium puzzle demands something like this.';
+      }
+    }
+
+    alphaSlider.addEventListener('input', updateAbsurd);
+    updateAbsurd();
+
+    /* ── "What World Would Fix It?" Simulator ─────────── */
+    var worldSigma = document.getElementById('worldSigma');
+    var worldCorr = document.getElementById('worldCorr');
+    var worldSigmaS = document.getElementById('worldSigmaS');
+    var worldSigmaVal = document.getElementById('worldSigmaVal');
+    var worldCorrVal = document.getElementById('worldCorrVal');
+    var worldSigmaSVal = document.getElementById('worldSigmaSVal');
+    var worldAlpha = document.getElementById('worldAlpha');
+    var worldCov = document.getElementById('worldCov');
+    var worldResultEl = document.getElementById('worldResult');
+
+    function updateWorld() {
+      var sigma_c = parseFloat(worldSigma.value);
+      var corr = parseFloat(worldCorr.value);
+      var sigma_s = parseFloat(worldSigmaS.value);
+      worldSigmaVal.textContent = (sigma_c * 100).toFixed(1) + '%';
+      worldCorrVal.textContent = corr.toFixed(2);
+      worldSigmaSVal.textContent = (sigma_s * 100).toFixed(1) + '%';
+
+      var cov = corr * sigma_c * sigma_s;
+      worldCov.textContent = cov.toFixed(4);
+
+      var targetPremium = 0.0618;
+      var alphaNeeded = cov > 0.00001 ? targetPremium / cov : 9999;
+      alphaNeeded = Math.round(alphaNeeded);
+      worldAlpha.textContent = alphaNeeded > 999 ? '999+' : alphaNeeded;
+
+      if (alphaNeeded <= 10) {
+        worldResultEl.className = 'world-result solved';
+        worldResultEl.innerHTML = '<strong>Puzzle solved.</strong> In this world, α = ' + alphaNeeded + ' is enough to explain the 6.18% premium. That is within the plausible range (1-10). The key: consumption risk is large enough that investors demand a big premium without needing extreme risk aversion.';
+      } else if (alphaNeeded <= 30) {
+        worldResultEl.className = 'world-result unsolved';
+        worldResultEl.innerHTML = '<strong>Getting closer, but not there.</strong> You need α = ' + alphaNeeded + ', which is still above the plausible range of 1-10. Try increasing consumption volatility or the correlation.';
+      } else {
+        worldResultEl.className = 'world-result unsolved';
+        worldResultEl.innerHTML = '<strong>Puzzle persists.</strong> α = ' + alphaNeeded + ' is far too high. In the real world (σ = 3.6%, correlation = 0.40), consumption is too smooth and too weakly correlated with stocks for the model to work.';
+      }
+    }
+
+    worldSigma.addEventListener('input', updateWorld);
+    worldCorr.addEventListener('input', updateWorld);
+    worldSigmaS.addEventListener('input', updateWorld);
+    updateWorld();
+
+    /* ── Euler Walkthrough ────────────────────────────── */
+    window.walkNext = function(btn) {
+      var next = btn.nextElementSibling;
+      if (next && next.classList.contains('walk-step')) {
+        next.classList.add('visible', 'active');
+      }
+      btn.classList.add('used');
+    };
+
+    /* ── Quiz ─────────────────────────────────────────── */
+    var quizAnswered = 0;
+    var quizCorrect = 0;
+    var totalQuestions = document.querySelectorAll('.quiz-item').length;
+
+    window.checkQuiz = function(btn) {
+      var item = btn.closest('.quiz-item');
+      var correct = item.getAttribute('data-correct');
+      var chosen = btn.getAttribute('data-val');
+      var explain = item.querySelector('.quiz-explain');
+      var allOpts = item.querySelectorAll('.quiz-opt');
+
+      allOpts.forEach(function(o) {
+        o.classList.add('disabled');
+        if (o.getAttribute('data-val') === correct) {
+          o.classList.add('correct');
+        }
+      });
+
+      if (chosen !== correct) {
+        btn.classList.add('wrong');
+      } else {
+        quizCorrect++;
+      }
+
+      explain.classList.add('show');
+      quizAnswered++;
+
+      if (quizAnswered >= totalQuestions) {
+        var scoreEl = document.getElementById('quizScore');
+        scoreEl.style.display = 'block';
+        if (quizCorrect === totalQuestions) {
+          scoreEl.textContent = quizCorrect + '/' + totalQuestions + ' — You understand the equity premium puzzle.';
+          scoreEl.style.color = '#2e7d32';
+        } else if (quizCorrect >= 3) {
+          scoreEl.textContent = quizCorrect + '/' + totalQuestions + ' — Good grasp. Review the ones you missed above.';
+          scoreEl.style.color = '#e65100';
+        } else {
+          scoreEl.textContent = quizCorrect + '/' + totalQuestions + ' — Scroll back up and re-read the sections you found tricky.';
+          scoreEl.style.color = '#c62828';
+        }
+      }
+    };
+
+    /* ── Re-bind info buttons for dynamically added content ── */
+    document.querySelectorAll('.info-btn').forEach(function(btn) {
+      btn.removeEventListener('click', btn._handler);
+      btn._handler = function(e) {
+        e.stopPropagation();
+        var term = this.getAttribute('data-term');
+        var def = definitions[term];
+        if (def) {
+          tooltipEl.textContent = def;
+          tooltipEl.classList.add('show');
+          var rect = this.getBoundingClientRect();
+          tooltipEl.style.left = rect.left + 'px';
+          tooltipEl.style.top = (rect.bottom + 4) + 'px';
+          tooltipEl.style.position = 'fixed';
+        }
+      };
+      btn.addEventListener('click', btn._handler);
+    });
+  </script>
+</body>
+</html>
